@@ -74,10 +74,7 @@ public class EchoSphereHub : Hub
             ReceiverId = dto.ToUserId
         };
 
-        // Send to the recipient using SignalR's UserIdentifier (which is set from ClaimTypes.NameIdentifier).
-        // This delivers to all connections for the given username.
         await Clients.User(dto.ToUserId).SendAsync("ReceivePrivateMessage", message);
-        // Echo back to the sender so they also see the private message
         await Clients.Caller.SendAsync("ReceivePrivateMessage", message);
     }
 }
