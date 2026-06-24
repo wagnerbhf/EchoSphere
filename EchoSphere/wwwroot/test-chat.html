@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>EchoSphere - Teste Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/test-chat.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🟢 EchoSphere — Teste de Chat</h1>
+            <div class="small muted">Conecte com token JWT, entre em salas e envie mensagens privadas.</div>
+        </header>
+
+        <section class="card">
+            <div style="margin-bottom:8px;"><label>Autenticação rápida (teste)</label></div>
+            <div class="controls">
+                <div class="row">
+                    <input id="usernameInput" type="text" placeholder="Digite um nome (ex: João)" />
+                    <button class="btn ghost" onclick="login()">Get Token (login)</button>
+                </div>
+
+                <div>
+                    <label>Token (cole aqui ou use Get Token)</label>
+                    <div class="input-inline">
+                        <input id="tokenInput" type="text" placeholder="JWT token" />
+                        <button class="btn" onclick="connect()" id="connectBtn">Connect to Hub</button>
+                    </div>
+                </div>
+
+                <div class="meta">
+                    <div class="badge">UserId: <span id="userIdDisplay">-</span></div>
+                    <div class="badge">Username: <span id="usernameDisplay">-</span></div>
+                    <button class="copy" onclick="copyToken()">Copy token</button>
+                    <label style="margin-left:8px;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)"><input id="rememberToken" type="checkbox" /> Remember token</label>
+                    <button class="copy" onclick="clearSavedToken()" title="Clear saved token">Clear saved</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <div>
+                    <label>Sala</label>
+                    <div class="input-inline">
+                        <select id="roomSelect">
+                            <option value="sala-geral">Sala Geral</option>
+                            <option value="namoro">Namoro</option>
+                            <option value="amizade">Amizade</option>
+                            <option value="estudo">Estudo</option>
+                            <option value="trabalho">Trabalho</option>
+                            <option value="hobbies">Hobbies</option>
+                            <option value="esportes">Esportes</option>
+                            <option value="musica">Música</option>
+                        </select>
+                        <button class="btn ghost" onclick="joinRoom()">Join Room</button>
+                    </div>
+                </div>
+                <div style="max-width:420px;">
+                    <label>Mensagem (sala)</label>
+                    <div class="input-inline">
+                        <input id="roomMessageInput" type="text" placeholder="Digite a mensagem para a sala" />
+                        <button class="btn" onclick="sendMessage()">Send Room Message</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:8px">
+                <label>Mensagem privada</label>
+                <div class="input-inline">
+                    <input id="toUserIdInput" type="text" placeholder="toUserId (recipient)" />
+                    <input id="privateMessageInput" type="text" placeholder="Digite a mensagem privada" />
+                    <button class="btn" onclick="sendPrivateMessage()">Send Private</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="grid-column: span 1 / span 1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <label>Activity log</label>
+                <div class="small muted">Eventos do hub aparecem aqui</div>
+            </div>
+            <div id="log"></div>
+        </section>
+
+        <footer>
+            Abra a página via: <code class="muted">https://localhost:7147/test-chat.html</code> para usar o fluxo de autenticação e SignalR localmente.
+        </footer>
+    </div>
+
+    <script src="js/test-chat.js" defer></script>
+</body>
+</html>
