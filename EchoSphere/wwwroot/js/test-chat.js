@@ -4,13 +4,33 @@ let token = null;
 (function init() {
     const saved = localStorage.getItem('echosphere.token');
     if (saved) {
-        document.getElementById('tokenInput').value = saved;
+        token = saved;
         document.getElementById('rememberToken').checked = true;
         const su = localStorage.getItem('echosphere.userId');
-        const sn = localStorage.getItem('echosphere.username');
         if (su) document.getElementById('userIdDisplay').textContent = su;
-        if (sn) document.getElementById('usernameDisplay').textContent = sn;
         addLog('\uD83D\uDD12 Loaded saved token');
+    }
+
+    const chatControls = document.getElementById('chatControls');
+    if (chatControls) chatControls.style.display = 'none';
+
+    const roomControls = document.getElementById('roomControls');
+    if (roomControls) roomControls.style.display = 'none';
+
+    const sendBtn = document.getElementById('sendRoomBtn');
+    if (sendBtn) sendBtn.disabled = true;
+
+    const roomSelect = document.getElementById('roomSelect');
+    if (roomSelect) {
+        roomSelect.addEventListener('change', () => {
+            const joinBtn = document.querySelector('button[onclick="joinRoom()"]');
+            if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = 'Join Room'; }
+            if (chatControls) chatControls.style.display = 'none';
+            if (roomControls) roomControls.style.display = 'none';
+            const currentRoom = document.getElementById('currentRoom');
+            if (currentRoom) currentRoom.textContent = '-';
+            if (sendBtn) sendBtn.disabled = true;
+        });
     }
 })();
 
@@ -37,7 +57,6 @@ async function login() {
         const data = await res.json();
         token = data.token;
         document.getElementById('userIdDisplay').textContent = data.userId;
-        document.getElementById('usernameDisplay').textContent = data.username;
         addLog('✅ Login succeeded — token received');
         const rememberEl = document.getElementById('rememberToken');
 
@@ -56,7 +75,7 @@ async function login() {
 }
 
 function copyToken() {
-    const t = token || localStorage.getItem('echosphere.token') || document.getElementById('tokenInput').value;
+    const t = token || localStorage.getItem('echosphere.token');
     if (!t) return addLog('No token to copy');
     navigator.clipboard?.writeText(t).then(() => addLog('Token copied'));
 }
@@ -100,9 +119,7 @@ async function connect() {
         if (saved) {
             document.getElementById('rememberToken').checked = true;
             const su = localStorage.getItem('echosphere.userId');
-            const sn = localStorage.getItem('echosphere.username');
             if (su) document.getElementById('userIdDisplay').textContent = su;
-            if (sn) document.getElementById('usernameDisplay').textContent = sn;
         }
     } catch (err) { addLog('❌ Connection failed: ' + err); console.error(err); }
 }

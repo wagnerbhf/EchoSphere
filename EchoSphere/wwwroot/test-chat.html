@@ -28,8 +28,7 @@
                 </div>
 
                 <div class="meta">
-                    <div class="badge">UserId: <span id="userIdDisplay">-</span></div>
-                    <div class="badge">Username: <span id="usernameDisplay">-</span></div>
+                    <div class="badge">User: <span id="userIdDisplay">-</span></div>
                     <label style="margin-left:8px;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)"><input id="rememberToken" type="checkbox" /> Remember token</label>
                     <button class="copy" onclick="clearSavedToken()" title="Clear saved token">Clear saved</button>
                 </div>
@@ -66,7 +65,7 @@
             <div style="margin-top:8px" id="chatControls">
                 <label>Mensagem privada</label>
                 <div class="input-inline">
-                    <input id="toUserIdInput" type="text" placeholder="toUserId (recipient)" />
+                    <input id="toUserIdInput" type="text" placeholder="recipient username" />
                     <input id="privateMessageInput" type="text" placeholder="Digite a mensagem privada" />
                     <button class="btn" onclick="sendPrivateMessage()" id="sendPrivateBtn">Send Private</button>
                 </div>

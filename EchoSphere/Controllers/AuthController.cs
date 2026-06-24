@@ -24,13 +24,18 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(request?.Username))
             return BadRequest("Username é obrigatório");
 
-        var userId = Guid.NewGuid().ToString();
+        // Use the provided username as the NameIdentifier so private messages can target users by their username.
+        // Normalize to a stable form (lowercase trimmed) to avoid casing mismatches.
+        var normalized = request.Username.Trim();
+        var userId = normalized.ToLowerInvariant();
 
         var claims = new[]
         {
+            // NameIdentifier will be the normalized username (used by SignalR as UserIdentifier)
             new Claim(ClaimTypes.NameIdentifier, userId),
-            new Claim(ClaimTypes.Name, request.Username),
-            new Claim("username", request.Username)
+            // Keep the display name
+            new Claim(ClaimTypes.Name, normalized),
+            new Claim("username", normalized)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
