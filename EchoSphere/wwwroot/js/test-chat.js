@@ -12,10 +12,10 @@ let token = null;
     }
 
     const chatControls = document.getElementById('chatControls');
-    if (chatControls) chatControls.style.display = 'none';
+    if (chatControls) chatControls.classList.add('d-none');
 
     const roomControls = document.getElementById('roomControls');
-    if (roomControls) roomControls.style.display = 'none';
+    if (roomControls) roomControls.classList.add('d-none');
 
     const sendBtn = document.getElementById('sendRoomBtn');
     if (sendBtn) sendBtn.disabled = true;
@@ -23,10 +23,12 @@ let token = null;
     const roomSelect = document.getElementById('roomSelect');
     if (roomSelect) {
         roomSelect.addEventListener('change', () => {
+            const joinBtnTop = document.getElementById('joinRoomTop');
+            if (joinBtnTop) { joinBtnTop.disabled = false; joinBtnTop.textContent = 'Join Room'; }
             const joinBtn = document.querySelector('button[onclick="joinRoom()"]');
             if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = 'Join Room'; }
-            if (chatControls) chatControls.style.display = 'none';
-            if (roomControls) roomControls.style.display = 'none';
+            if (chatControls) chatControls.classList.add('d-none');
+            if (roomControls) roomControls.classList.add('d-none');
             const currentRoom = document.getElementById('currentRoom');
             if (currentRoom) currentRoom.textContent = '-';
             if (sendBtn) sendBtn.disabled = true;
