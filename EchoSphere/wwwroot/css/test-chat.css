@@ -1,37 +1,91 @@
-/* Variáveis de Cores - Tema Light Premium */
+/* --- MAPEAMENTO DE VARIÁVEIS DE COR --- */
 :root {
     --bg-page: #f4f6f9;
-    --bg-white: #ffffff;
-    --primary-color: #0d6efd;
-    --primary-hover: #0b5ed7;
+    --bg-container: #ffffff;
+    --bg-fieldset: #ffffff;
+    --bg-input: #fafbfc;
+    --bg-log: #ffffff;
+    --bg-log-line: #f8f9fa;
+    --bg-log-header: #f8f9fa;
+    --bg-secondary-btn: #f1f3f5;
     --text-main: #212529;
     --text-muted: #6c757d;
     --border-color: #dee2e6;
-    --log-bg: #ffffff;
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --badge-user-bg: #f0f4f8;
+    --badge-user-border: #d0e2ff;
 }
 
-/* Configurações de Fundo */
+/* --- CORES PARA O DARK MODE --- */
+[data-theme="dark"] {
+    --bg-page: #0f172a;
+    --bg-container: #1e293b;
+    --bg-fieldset: #1e293b;
+    --bg-input: #0f172a;
+    --bg-log: #0f172a;
+    --bg-log-line: #1e293b;
+    --bg-log-header: #111827;
+    --bg-secondary-btn: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --primary-color: #38bdf8;
+    --primary-hover: #7dd3fc;
+    --badge-user-bg: rgba(56, 189, 248, 0.1);
+    --badge-user-border: rgba(56, 189, 248, 0.3);
+}
+
+/* Configurações Globais */
 body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-color: var(--bg-page);
     color: var(--text-main);
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Container Central Totalmente Branco */
+/* Elementos Utilitários de Tema */
+.theme-text-main {
+    color: var(--text-main);
+}
+
+.theme-border {
+    border-color: var(--border-color) !important;
+}
+
+.theme-badge {
+    background-color: var(--bg-input);
+    border-color: var(--border-color) !important;
+}
+
+.theme-log-header {
+    background-color: var(--bg-log-header);
+    border-color: var(--border-color) !important;
+}
+
+.theme-badge-room {
+    background-color: var(--bg-container) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+/* Container Central */
 .app-container {
-    background-color: var(--bg-white);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.08) !important;
+    background-color: var(--bg-container);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.05) !important;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* --- Técnica Clássica de Fieldset e Legend Estilizada --- */
+/* Fieldset e Legend */
 .custom-fieldset {
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 1.25rem 1rem 1rem 1rem;
     position: relative;
-    background-color: var(--bg-white);
+    background-color: var(--bg-fieldset);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .custom-legend {
@@ -44,37 +98,34 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--primary-color);
-    background-color: var(--bg-white); /* Garante o recorte perfeito em cima da linha */
+    background-color: var(--bg-fieldset);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Ajuste de conteúdo interno para manter alinhamento vertical perfeito */
 .fieldset-content {
     margin-top: 5px;
     width: 100%;
 }
 
-/* Elementos de Formulário */
+/* Formulários */
 .form-control, .form-select {
-    background-color: #fafbfc;
+    background-color: var(--bg-input);
     border: 1px solid var(--border-color);
     color: var(--text-main);
     border-radius: 8px;
     padding: 0.55rem 0.75rem;
     font-size: 0.9rem;
-    transition: all 0.15s ease-in-out;
+    transition: all 0.2s ease;
 }
 
-    .form-control::placeholder {
-        color: #adb5bd;
-    }
-
     .form-control:focus, .form-select:focus {
-        background-color: var(--bg-white);
+        background-color: var(--bg-input);
         border-color: var(--primary-color);
+        color: var(--text-main);
         box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
     }
 
-/* Customização de Botões */
+/* Botões */
 .btn-primary-custom {
     background-color: var(--primary-color);
     border: none;
@@ -85,35 +136,34 @@ body {
     transition: background-color 0.15s ease;
 }
 
-    .btn-primary-custom:hover {
-        background-color: var(--primary-hover);
-        color: #ffffff;
-    }
+[data-theme="dark"] .btn-primary-custom {
+    color: #0f172a; /* Texto escuro no botão claro do dark mode */
+    font-weight: 600;
+}
 
-    .btn-primary-custom:active {
-        transform: scale(0.98);
-    }
+.btn-primary-custom:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-primary-custom:active {
+    transform: scale(0.98);
+}
 
 .btn-secondary-custom {
-    background-color: #f1f3f5;
+    background-color: var(--bg-secondary-btn);
     border: 1px solid var(--border-color);
-    color: #495057;
+    color: var(--text-main);
     font-weight: 500;
     border-radius: 8px;
     padding: 0.55rem 1.2rem;
     transition: all 0.15s ease;
 }
 
-    .btn-secondary-custom:hover {
-        background-color: #e9ecef;
-        color: #212529;
-    }
-
-/* Badge do Usuário */
+/* Badge Usuário */
 .badge-user {
-    background-color: #f0f4f8;
-    border: 1px solid #d0e2ff;
-    color: #004085;
+    background-color: var(--badge-user-bg);
+    border: 1px solid var(--badge-user-border);
+    color: var(--primary-color);
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 0.85rem;
@@ -128,44 +178,77 @@ body {
     box-shadow: 0 0 6px #198754;
 }
 
-/* Caixa de Log Totalmente Branca */
+/* Caixa de Logs */
 .log-container {
     height: 420px;
     overflow-y: auto;
-    background-color: var(--log-bg);
+    background-color: var(--bg-log);
     padding: 1rem;
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 0.9rem;
+    transition: background-color 0.3s ease;
 }
 
-/* Linhas do Log de Atividade */
 .log-line {
     padding: 6px 10px;
     margin-bottom: 6px;
     border-radius: 6px;
-    background-color: #f8f9fa;
-    border-left: 4px solid #dee2e6;
-    color: #343a40;
+    background-color: var(--bg-log-line);
+    border-left: 4px solid var(--border-color);
+    color: var(--text-main);
 }
 
 .ultra-small {
     font-size: 0.75rem;
 }
 
-/* Customização de Scrollbar */
+/* --- ESTILO DO BOTÃO TOGGLE DE TEMA --- */
+.btn-theme-toggle {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-theme-toggle:hover {
+        transform: scale(1.05);
+        background: var(--bg-secondary-btn);
+    }
+
+/* Lógica de exibição dos ícones (Sol/Lua) */
+html[data-theme="dark"] .light-icon {
+    display: block;
+}
+
+html[data-theme="dark"] .dark-icon {
+    display: none;
+}
+
+html:not([data-theme="dark"]) .light-icon {
+    display: none;
+}
+
+html:not([data-theme="dark"]) .dark-icon {
+    display: block;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--bg-input);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #ced4da;
+    background: var(--border-color);
     border-radius: 4px;
 }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #adb5bd;
-    }

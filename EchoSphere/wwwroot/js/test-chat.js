@@ -3,6 +3,12 @@ let isConnected = false;
 let token = null;
 
 (function init() {
+    // --- LÓGICA DE RECUPERAÇÃO DO TEMA SALVO ---
+    const savedTheme = localStorage.getItem('echosphere.theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
     const saved = localStorage.getItem('echosphere.token');
     if (saved) {
         token = saved;
@@ -35,28 +41,37 @@ let token = null;
             if (sendBtn) sendBtn.disabled = true;
         });
     }
+
+    // --- ESCUTADOR DO BOTÃO TOGGLE DE TEMA ---
+    const themeToggleBtn = document.getElementById('themeToggle');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('echosphere.theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('echosphere.theme', 'dark');
+            }
+        });
+    }
 })();
 
-// Customização elegante do feed de logs adaptada ao novo layout limpo
 function addLog(text) {
     const log = document.getElementById('log');
     if (!log) return;
     const line = document.createElement('div');
     line.className = 'log-line';
 
-    // Altera a cor do indicador lateral esquerdo baseado nos status
     if (text.includes('❌')) {
         line.style.borderLeftColor = '#dc3545';
-        line.style.backgroundColor = '#fff5f5';
     } else if (text.includes('✅')) {
         line.style.borderLeftColor = '#198754';
-        line.style.backgroundColor = '#f4fbf7';
     } else if (text.includes('📨')) {
         line.style.borderLeftColor = '#0d6efd';
-        line.style.backgroundColor = '#f0f7ff';
     } else if (text.includes('🔐')) {
         line.style.borderLeftColor = '#ffc107';
-        line.style.backgroundColor = '#fffdf5';
     }
 
     line.innerHTML = text;
