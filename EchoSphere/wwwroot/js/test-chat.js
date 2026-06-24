@@ -1,34 +1,35 @@
 let connection = null;
 let isConnected = false;
 let token = null;
+
 (function init() {
     const saved = localStorage.getItem('echosphere.token');
     if (saved) {
         token = saved;
-        document.getElementById('rememberToken').checked = true;
+        const rememberEl = document.getElementById('rememberToken');
+        if (rememberEl) rememberEl.checked = true;
         const su = localStorage.getItem('echosphere.userId');
         if (su) document.getElementById('userIdDisplay').textContent = su;
-        addLog('\uD83D\uDD12 Loaded saved token');
+        addLog('🔒 Loaded saved token');
     }
 
     const chatControls = document.getElementById('chatControls');
-    if (chatControls) chatControls.classList.add('d-none');
-
     const roomControls = document.getElementById('roomControls');
-    if (roomControls) roomControls.classList.add('d-none');
-
     const sendBtn = document.getElementById('sendRoomBtn');
+
     if (sendBtn) sendBtn.disabled = true;
 
     const roomSelect = document.getElementById('roomSelect');
     if (roomSelect) {
         roomSelect.addEventListener('change', () => {
             const joinBtnTop = document.getElementById('joinRoomTop');
-            if (joinBtnTop) { joinBtnTop.disabled = false; joinBtnTop.textContent = 'Join Room'; }
-            const joinBtn = document.querySelector('button[onclick="joinRoom()"]');
-            if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = 'Join Room'; }
+            if (joinBtnTop) {
+                joinBtnTop.disabled = false;
+                joinBtnTop.textContent = 'Join';
+            }
             if (chatControls) chatControls.classList.add('d-none');
             if (roomControls) roomControls.classList.add('d-none');
+
             const currentRoom = document.getElementById('currentRoom');
             if (currentRoom) currentRoom.textContent = '-';
             if (sendBtn) sendBtn.disabled = true;
@@ -36,21 +37,41 @@ let token = null;
     }
 })();
 
+// Customização elegante do feed de logs adaptada ao novo layout limpo
 function addLog(text) {
     const log = document.getElementById('log');
+    if (!log) return;
     const line = document.createElement('div');
-    line.style.padding = '6px 0';
+    line.className = 'log-line';
+
+    // Altera a cor do indicador lateral esquerdo baseado nos status
+    if (text.includes('❌')) {
+        line.style.borderLeftColor = '#dc3545';
+        line.style.backgroundColor = '#fff5f5';
+    } else if (text.includes('✅')) {
+        line.style.borderLeftColor = '#198754';
+        line.style.backgroundColor = '#f4fbf7';
+    } else if (text.includes('📨')) {
+        line.style.borderLeftColor = '#0d6efd';
+        line.style.backgroundColor = '#f0f7ff';
+    } else if (text.includes('🔐')) {
+        line.style.borderLeftColor = '#ffc107';
+        line.style.backgroundColor = '#fffdf5';
+    }
+
     line.innerHTML = text;
     log.appendChild(line);
     log.scrollTop = log.scrollHeight;
 }
 
 async function login() {
-    const username = document.getElementById('usernameInput').value.trim();
+    const usernameInput = document.getElementById('usernameInput');
+    const username = usernameInput ? usernameInput.value.trim() : '';
     if (!username) { alert('Digite um username'); return; }
     try {
         const res = await fetch('/api/auth/login', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
         });
 
@@ -60,13 +81,13 @@ async function login() {
         token = data.token;
         document.getElementById('userIdDisplay').textContent = data.userId;
         addLog('✅ Login succeeded — token received');
-        const rememberEl = document.getElementById('rememberToken');
 
+        const rememberEl = document.getElementById('rememberToken');
         if (rememberEl && rememberEl.checked) {
             localStorage.setItem('echosphere.token', data.token);
             localStorage.setItem('echosphere.userId', data.userId);
             localStorage.setItem('echosphere.username', data.username);
-            addLog('\uD83D\uDD12 Token saved locally');
+            addLog('🔒 Token saved locally');
         }
 
         await connect();
@@ -98,18 +119,18 @@ async function connect() {
     connection.on('ReceiveMessage', (msg) => {
         const sender = msg.senderUsername || msg.SenderUsername || msg.sender || 'unknown';
         const content = msg.content || msg.Content || '';
-        addLog(`📨 ${sender}: ${content}`);
+        addLog(`📨 <strong>${sender}:</strong> ${content}`);
     });
 
     connection.on('ReceivePrivateMessage', (msg) => {
         const sender = msg.senderUsername || msg.SenderUsername || msg.sender || 'unknown';
         const content = msg.content || msg.Content || '';
-        addLog(`🔐 Private from ${sender}: ${content}`);
+        addLog(`🔐 <strong>Private from ${sender}:</strong> ${content}`);
     });
 
-    connection.on('UserConnected', (username) => addLog(`👤 ${username} connected`));
-    connection.on('UserJoined', (username, roomId) => addLog(`👥 ${username} joined ${roomId}`));
-    connection.on('UserDisconnected', (userId) => addLog(`🚫 user disconnected: ${userId}`));
+    connection.on('UserConnected', (username) => addLog(`👤 <em>${username} connected</em>`));
+    connection.on('UserJoined', (username, roomId) => addLog(`👥 <em>${username} joined ${roomId}</em>`));
+    connection.on('UserDisconnected', (userId) => addLog(`🚫 <em>user disconnected: ${userId}</em>`));
 
     connection.onclose(() => { isConnected = false; addLog('⚠️ Disconnected from hub'); });
 
@@ -117,13 +138,10 @@ async function connect() {
         await connection.start();
         isConnected = true;
         addLog('✅ Connected to EchoSphere Hub');
-        const saved = localStorage.getItem('echosphere.token');
-        if (saved) {
-            document.getElementById('rememberToken').checked = true;
-            const su = localStorage.getItem('echosphere.userId');
-            if (su) document.getElementById('userIdDisplay').textContent = su;
-        }
-    } catch (err) { addLog('❌ Connection failed: ' + err); console.error(err); }
+    } catch (err) {
+        addLog('❌ Connection failed: ' + err);
+        console.error(err);
+    }
 }
 
 function clearSavedToken() {
@@ -137,18 +155,24 @@ async function joinRoom() {
     if (!connection) return addLog('❌ Connect first!');
     const roomId = document.getElementById('roomSelect').value;
     if (!roomId) return addLog('❌ Provide a room id');
+
     await connection.invoke('JoinRoom', roomId);
     addLog(`Joined room ${roomId}`);
+
     const chatControls = document.getElementById('chatControls');
-    if (chatControls) chatControls.style.display = 'block';
+    if (chatControls) chatControls.classList.remove('d-none');
+
     const roomControls = document.getElementById('roomControls');
-    if (roomControls) roomControls.style.display = 'block';
+    if (roomControls) roomControls.classList.remove('d-none');
+
     const currentRoom = document.getElementById('currentRoom');
     const sel = document.getElementById('roomSelect');
     const displayName = sel?.selectedOptions?.[0]?.text || roomId;
     if (currentRoom) currentRoom.textContent = displayName;
-    const joinBtn = document.querySelector('button[onclick="joinRoom()"]');
+
+    const joinBtn = document.getElementById('joinRoomTop');
     if (joinBtn) { joinBtn.disabled = true; joinBtn.textContent = 'Joined'; }
+
     const sendBtn = document.getElementById('sendRoomBtn');
     if (sendBtn) sendBtn.disabled = false;
 }
@@ -156,21 +180,25 @@ async function joinRoom() {
 async function sendMessage() {
     if (!connection) return addLog('❌ Connect first!');
     const roomId = document.getElementById('roomSelect').value || 'sala-geral';
-    const content = document.getElementById('roomMessageInput').value.trim();
+    const messageInput = document.getElementById('roomMessageInput');
+    const content = messageInput ? messageInput.value.trim() : '';
     if (!content) return addLog('❌ Type a message');
+
     await connection.invoke('SendMessage', { roomId, content });
     const sel = document.getElementById('roomSelect');
     const displayName = sel?.selectedOptions?.[0]?.text || roomId;
     addLog(`Message sent to ${displayName}`);
-    document.getElementById('roomMessageInput').value = '';
+    if (messageInput) messageInput.value = '';
 }
 
 async function sendPrivateMessage() {
     if (!connection) return addLog('❌ Connect first!');
     const toUserId = document.getElementById('toUserIdInput').value.trim();
-    const content = document.getElementById('privateMessageInput').value.trim();
+    const privateInput = document.getElementById('privateMessageInput');
+    const content = privateInput ? privateInput.value.trim() : '';
     if (!toUserId || !content) return addLog('❌ Provide toUserId and message');
+
     await connection.invoke('SendPrivateMessage', { toUserId, content });
     addLog(`Private message sent to ${toUserId}`);
-    document.getElementById('privateMessageInput').value = '';
+    if (privateInput) privateInput.value = '';
 }
