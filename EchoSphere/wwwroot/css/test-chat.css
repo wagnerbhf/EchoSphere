@@ -163,6 +163,17 @@ input[type="text"], input[type="password"], textarea {
             box-shadow: 0 6px 18px rgba(0,209,178,0.08);
             transform: translateY(-1px);
         }
+.hidden {
+    display: none;
+}
+#chatControls {
+    display: none;
+    margin-top: 8px;
+}
+
+#roomControls {
+    display: none;
+}
 
 .copy {
     background: transparent;

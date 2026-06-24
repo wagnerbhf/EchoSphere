@@ -1,5 +1,6 @@
 let connection = null;
 let isConnected = false;
+let token = null;
 (function init() {
     const saved = localStorage.getItem('echosphere.token');
     if (saved) {
@@ -34,10 +35,10 @@ async function login() {
         if (!res.ok) throw new Error(await res.text());
 
         const data = await res.json();
-        document.getElementById('tokenInput').value = data.token;
+        token = data.token;
         document.getElementById('userIdDisplay').textContent = data.userId;
         document.getElementById('usernameDisplay').textContent = data.username;
-        addLog('✅ Login succeeded — token filled');
+        addLog('✅ Login succeeded — token received');
         const rememberEl = document.getElementById('rememberToken');
 
         if (rememberEl && rememberEl.checked) {
@@ -46,6 +47,8 @@ async function login() {
             localStorage.setItem('echosphere.username', data.username);
             addLog('\uD83D\uDD12 Token saved locally');
         }
+
+        await connect();
     } catch (err) {
         addLog('❌ Login error: ' + err);
         console.error(err);
@@ -53,14 +56,17 @@ async function login() {
 }
 
 function copyToken() {
-    const token = document.getElementById('tokenInput').value;
-    if (!token) return addLog('No token to copy');
-    navigator.clipboard?.writeText(token).then(() => addLog('Token copied'));
+    const t = token || localStorage.getItem('echosphere.token') || document.getElementById('tokenInput').value;
+    if (!t) return addLog('No token to copy');
+    navigator.clipboard?.writeText(t).then(() => addLog('Token copied'));
 }
 
 async function connect() {
-    const token = document.getElementById('tokenInput').value.trim();
-    if (!token) return addLog('❌ Cole seu token primeiro!');
+    if (!token) {
+        const saved = localStorage.getItem('echosphere.token');
+        if (saved) token = saved;
+    }
+    if (!token) return addLog('❌ No token available. Please login first.');
     if (isConnected) return addLog('Already connected');
 
     connection = new signalR.HubConnectionBuilder()
@@ -90,7 +96,6 @@ async function connect() {
         await connection.start();
         isConnected = true;
         addLog('✅ Connected to EchoSphere Hub');
-
         const saved = localStorage.getItem('echosphere.token');
         if (saved) {
             document.getElementById('rememberToken').checked = true;
@@ -115,6 +120,18 @@ async function joinRoom() {
     if (!roomId) return addLog('❌ Provide a room id');
     await connection.invoke('JoinRoom', roomId);
     addLog(`Joined room ${roomId}`);
+    const chatControls = document.getElementById('chatControls');
+    if (chatControls) chatControls.style.display = 'block';
+    const roomControls = document.getElementById('roomControls');
+    if (roomControls) roomControls.style.display = 'block';
+    const currentRoom = document.getElementById('currentRoom');
+    const sel = document.getElementById('roomSelect');
+    const displayName = sel?.selectedOptions?.[0]?.text || roomId;
+    if (currentRoom) currentRoom.textContent = displayName;
+    const joinBtn = document.querySelector('button[onclick="joinRoom()"]');
+    if (joinBtn) { joinBtn.disabled = true; joinBtn.textContent = 'Joined'; }
+    const sendBtn = document.getElementById('sendRoomBtn');
+    if (sendBtn) sendBtn.disabled = false;
 }
 
 async function sendMessage() {
@@ -123,7 +140,9 @@ async function sendMessage() {
     const content = document.getElementById('roomMessageInput').value.trim();
     if (!content) return addLog('❌ Type a message');
     await connection.invoke('SendMessage', { roomId, content });
-    addLog('Message sent to room');
+    const sel = document.getElementById('roomSelect');
+    const displayName = sel?.selectedOptions?.[0]?.text || roomId;
+    addLog(`Message sent to ${displayName}`);
     document.getElementById('roomMessageInput').value = '';
 }
 

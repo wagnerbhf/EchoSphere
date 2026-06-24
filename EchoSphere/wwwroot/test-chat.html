@@ -24,17 +24,12 @@
                 </div>
 
                 <div>
-                    <label>Token (cole aqui ou use Get Token)</label>
-                    <div class="input-inline">
-                        <input id="tokenInput" type="text" placeholder="JWT token" />
-                        <button class="btn" onclick="connect()" id="connectBtn">Connect to Hub</button>
-                    </div>
+                    <div class="small muted">Token is handled automatically for you (not displayed).</div>
                 </div>
 
                 <div class="meta">
                     <div class="badge">UserId: <span id="userIdDisplay">-</span></div>
                     <div class="badge">Username: <span id="usernameDisplay">-</span></div>
-                    <button class="copy" onclick="copyToken()">Copy token</button>
                     <label style="margin-left:8px;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)"><input id="rememberToken" type="checkbox" /> Remember token</label>
                     <button class="copy" onclick="clearSavedToken()" title="Clear saved token">Clear saved</button>
                 </div>
@@ -59,21 +54,21 @@
                         <button class="btn ghost" onclick="joinRoom()">Join Room</button>
                     </div>
                 </div>
-                <div style="max-width:420px;">
+                <div id="roomControls" style="max-width:420px;">
                     <label>Mensagem (sala)</label>
                     <div class="input-inline">
                         <input id="roomMessageInput" type="text" placeholder="Digite a mensagem para a sala" />
-                        <button class="btn" onclick="sendMessage()">Send Room Message</button>
+                        <button class="btn" onclick="sendMessage()" id="sendRoomBtn">Send Room Message</button>
                     </div>
                 </div>
             </div>
 
-            <div style="margin-top:8px">
+            <div style="margin-top:8px" id="chatControls">
                 <label>Mensagem privada</label>
                 <div class="input-inline">
                     <input id="toUserIdInput" type="text" placeholder="toUserId (recipient)" />
                     <input id="privateMessageInput" type="text" placeholder="Digite a mensagem privada" />
-                    <button class="btn" onclick="sendPrivateMessage()">Send Private</button>
+                    <button class="btn" onclick="sendPrivateMessage()" id="sendPrivateBtn">Send Private</button>
                 </div>
             </div>
         </section>
@@ -84,6 +79,7 @@
                 <div class="small muted">Eventos do hub aparecem aqui</div>
             </div>
             <div id="log"></div>
+            <div style="margin-top:10px;" class="small muted">Current room: <span id="currentRoom">-</span></div>
         </section>
 
         <footer>
